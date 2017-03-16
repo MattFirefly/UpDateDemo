@@ -18,13 +18,15 @@ import io.realm.RealmResults;
 
 /**
  * Created by zhanggangmin on 2017/2/14.
+ *
+ * gather Branches
  */
 
-public class UpdateAPP  {
+public class UpdateAPP {
 
     private String auth;
     private String path = "http://p.gdown.baidu.com/0a96a07252e5349b3f3d1b286d332a1a850ca6d0ba2e112e06616c97133af91b2103304f39e08443a087d0f434edad452d111ec1c15ac7a5faecdb8f7a41e6b4982ea74a21a68252e25255688ffc1cf3c637da5e2183f2aae2ea5cccece512c5d92fe4a99f0bfa6c695de398887ccb942439c81071935897f2133fdb92fb253d93a30f3d9bf9e54f1464bd871aac56dfc58f29b5df2eeb112ac01969bd8b07c5682b45931fb0a63328f6a93b03983bd8d3cc1510e87e4876fac2948e879fbf5bb14b801b8500fbf247430ecd1b6d85a5e9d8cdaebe150c64a394083c2ddab19382b99fd7d704f135";
-//    private String img = "http://125.91.249.37/apk.r1.market.hiapk.com/data/upload/apkres/2017/2_23/15/com.tencent.tmgp.sgame_032612.apk?wsiphost=local";
+    //    private String img = "http://125.91.249.37/apk.r1.market.hiapk.com/data/upload/apkres/2017/2_23/15/com.tencent.tmgp.sgame_032612.apk?wsiphost=local";
     private int downloadLength;
     private boolean isCompleted;
     // 线程池中默认线程的个数为5
@@ -60,7 +62,7 @@ public class UpdateAPP  {
                         multithread(new File(downloadFile.getFilePath()), downloadFile.getUrl(), downloadFile.getThreadQuantity(), downloadFile.getFileSize());
                     } else {
                         final File file = IOCommon.newfile(context);//新建文件
-                     //保存下载配置
+                        //保存下载配置
                         realm.executeTransaction(new Realm.Transaction() {
                             @Override
                             public void execute(Realm realm) {
@@ -117,8 +119,8 @@ public class UpdateAPP  {
      * @throws IOException            连接超时
      * @throws InterruptedIOException 用户终止了下载
      */
-    private void download(File outFile, long startPos, long endPos,ProgressCallback callback) {
-        long nowPos=startPos;
+    private void download(File outFile, long startPos, long endPos, ProgressCallback callback) {
+        long nowPos = startPos;
         HttpURLConnection httpURLConnection = null;
         BufferedInputStream bis = null;
         BufferedRandomAccessFile raf = null;
@@ -151,7 +153,7 @@ public class UpdateAPP  {
                 while ((len = bis.read(buffer, 0, 1024)) != -1) {
                     raf.write(buffer, 0, len);
                     downloadLength += len;
-                    nowPos+=len;
+                    nowPos += len;
 //                    onProgressCallback(downloadLength);//回调
                     callback.onProgressCallback(nowPos);// TODO: 2017/3/16 这个要回调两个参数了 一个now一个len
                 }
@@ -187,24 +189,24 @@ public class UpdateAPP  {
     }
 
     public void multithread(File outFile, String path, int threadQuantity, long fileLength) {
-        long block =  fileLength / threadQuantity; //计算线程下载量
+        long block = fileLength / threadQuantity; //计算线程下载量
 //        if (fileLength % threadQuantity == 0) {
 //            for (int i = 0; i < threadQuantity; i++) {
 //                new DownLoadThread(outFile,i+1, (block * i), block + (block * i), path).start();
 //            }
 //        } else {
-            for (int i = 0; i < threadQuantity - 1; i++) {
-                new DownLoadThread(outFile, i+1, (block * i), block + (block * i)-1, path).start();
-            }
-            DownLoadThread downLoadThread  =new DownLoadThread(outFile,threadQuantity, block*(threadQuantity-1), fileLength, path);
-            downLoadThread.start();
-            // TODO: 2017/3/16 这个回调的地方判断一下如果等于目标大小，则表示下次完成 做完整性验证操作等其他业务 然后累计的地方加同步锁
+        for (int i = 0; i < threadQuantity - 1; i++) {
+            new DownLoadThread(outFile, i + 1, (block * i), block + (block * i) - 1, path).start();
+        }
+        DownLoadThread downLoadThread = new DownLoadThread(outFile, threadQuantity, block * (threadQuantity - 1), fileLength, path);
+        downLoadThread.start();
+        // TODO: 2017/3/16 这个回调的地方判断一下如果等于目标大小，则表示下次完成 做完整性验证操作等其他业务 然后累计的地方加同步锁
 //        }
 
     }
 
 
-    private  class DownLoadThread extends Thread {
+    private class DownLoadThread extends Thread {
         private File outFile;
         private int threadID;
         private long startIndex;
@@ -221,7 +223,7 @@ public class UpdateAPP  {
             this.startIndex = startIndex;
             this.endIndex = endIndex;
             this.url = URL;
-            System.out.println("startIndex="+startIndex+" endIndex="+endIndex);
+            System.out.println("startIndex=" + startIndex + " endIndex=" + endIndex);
         }
 
         public void run() {
